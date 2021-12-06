@@ -1,0 +1,29 @@
+Mandatory args:
+ENV_NAME: Gym Environment Name
+EXPECTED_REWARD: (train.py) The reward at which Environment is considered solved
+WEIGHT_FILE: (test.py) Location of the required HDF5 file
+
+
+Optional args:
+-ti,--train_iterations : Maximum training iterations : 5000
+-mel,--max_episode_length : Maximum steps in each episode : 1000
+-tbs,--trajectory_buffer_size : Trajectory Buffer Size : 32
+-bs,--batch_size : Batch Size : 16
+-re,--render_every : Renders environment every _ episodes : 1 (unnecessary to render?)
+
+
+[Consider Batch Size: https://arxiv.org/pdf/1609.04836.pdf]
+For CartPole-v0 (expected_reward = 195, window = 100):
+1.  TBS: 32, BS: 16 -> success in 1975 episodes
+2.  TBS: 64, BS: 32 -> success in 2492 episodes
+3.  TBS: 128, BS: 64 -> fail in 5000 episodes (max_reward=200,max_window_mean=134)
+
+https://arxiv.org/pdf/1606.02228.pdf (Consider section 3.7)
+
+
+Agent args:
+-G,--gamma : Gamma Value : 0.99
+-gl,--gae_lambda : Lambda value for Generalized Advantage Estimation : 0.95
+-clr,--clipping_loss_ratio : Gradient Clipping Loss Ratio : 0.1
+-elr,--entropy_loss_ratio : Entropy Loss Ratio : 0.001
+-tua,--target_update_alpha : Learning Rate Alpha :0.9
