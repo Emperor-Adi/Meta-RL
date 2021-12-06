@@ -73,6 +73,7 @@ docs/_build/
 
 # PyBuilder
 target/
+models/
 
 # Jupyter Notebook
 .ipynb_checkpoints
@@ -129,3 +130,4 @@ dmypy.json
 .pyre/
 
 *.csv
+models/
