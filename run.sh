@@ -19,6 +19,6 @@ fi
 if [ $1 == "test" ]; then
     for env in ${environments[@]}
     do
-        python3 test.py $env ${test_args[$env]}
+        python3 test.py $env "models/${test_args[$env]}"
     done
 fi
