@@ -5,6 +5,7 @@ WEIGHT_FILE: (test.py) Location of the required HDF5 file
 
 
 Optional args:
+CL-arg-name : Description : Current Default
 -ti,--train_iterations : Maximum training iterations : 5000
 -mel,--max_episode_length : Maximum steps in each episode : 1000
 -tbs,--trajectory_buffer_size : Trajectory Buffer Size : 32
