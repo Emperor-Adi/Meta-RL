@@ -70,7 +70,7 @@ if not os.path.isfile('test_data.csv'):
 try:
     with open('test_data.csv','a+') as csvfile:
         csvwriter = csv.writer(csvfile,lineterminator="\n")
-        row = [ENV_NAME,0,0,WEIGHT_FILE]
+        row = [ENV_NAME,0,0,WEIGHT_FILE[7:]]
         for i in range(20):
             episode_reward = 0
             state = env.reset()
