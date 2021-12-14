@@ -148,7 +148,7 @@ class Agent:
 
     def get_v(self,state):
         s = np.reshape(state,(-1, self.state_dim[0]))
-        v = self.critic_network.predict_on_batch(s)
+        v = self.critic_ork.predict_on_batch(s)
         return v
 
 
