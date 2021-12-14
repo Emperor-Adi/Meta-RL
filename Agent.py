@@ -155,3 +155,8 @@ class Agent:
     def get_old_prediction(self, state):
         state = np.reshape(state, (-1, self.state_dim[0]))
         return self.actor_old_network.predict_on_batch([state,self.dummy_advantage, self.dummy_old_prediciton])
+
+
+
+
+# lkdsjfdhglskjhgf
