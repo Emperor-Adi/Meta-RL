@@ -25,7 +25,7 @@ import gym
 from collections import deque
 import tensorflow as tf
 from tensorflow import keras as K
-from Agent import *
+from Project.Agent import *
 import sys
 import csv
 import json
