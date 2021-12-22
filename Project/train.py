@@ -75,7 +75,7 @@ import gym
 from collections import deque
 import tensorflow as tf
 from tensorflow import keras as K
-from Agent import *
+from Project.Agent import *
 import sys
 import csv
 
@@ -123,7 +123,7 @@ try:
             row[1],row[2] = cnt_episode,r_sum
             if np.mean(scores_window)>=EXPECTED_REWARD:
                 # print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}'.format(cnt_episode-100, np.mean(scores_window)))
-                agent.actor_network.save_weights("models/"+ENV_NAME+"_"+str(r_sum)+".h5")
+                agent.actor_network.save_weights("../models/"+ENV_NAME+"_"+str(r_sum)+".h5")
                 row[4],row[5] = cnt_episode-100,np.mean(scores_window)
                 csvwriter.writerow(row)
                 break
