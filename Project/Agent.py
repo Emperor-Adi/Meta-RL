@@ -5,7 +5,7 @@ import gym
 from collections import deque
 import tensorflow as tf
 from tensorflow import keras as K
-from Project.Memory import *
+from Memory import *
 
 class Agent:
     def __init__(self,action_n, state_dim, training_batch_size,GAMMA=0.99, \
