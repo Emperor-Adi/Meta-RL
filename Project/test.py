@@ -1,4 +1,15 @@
 import argparse
+import numpy as np
+import os
+import time
+import gym
+from collections import deque
+import tensorflow as tf
+from tensorflow import keras as K
+from Agent import *
+import sys
+import csv
+import json
 
 parser = argparse.ArgumentParser()
 
@@ -18,17 +29,6 @@ parser.add_argument('-tua','--target_update_alpha',type=float)
 
 args = parser.parse_args()
 
-import numpy as np
-import os
-import time
-import gym
-from collections import deque
-import tensorflow as tf
-from tensorflow import keras as K
-from Agent import *
-import sys
-import csv
-import json
 
 ENV_NAME = args.env_name
 WEIGHT_FILE = args.weight_file

@@ -1,7 +1,16 @@
-#Handling command line args
-
+import numpy as np
+import os
+import time
+import gym
+from collections import deque
+import tensorflow as tf
+from tensorflow import keras as K
+from Agent import *
+import sys
+import csv
 import argparse
 
+#Handling command line args
 parser = argparse.ArgumentParser()
 
 #positional arguments
@@ -68,19 +77,6 @@ if args.target_update_alpha != None:
 #print('TRAIN_ITERATIONS',TRAIN_ITERATIONS,' MAX_EPISODE_LENGTH ',MAX_EPISODE_LENGTH)
 
 
-import numpy as np
-import os
-import time
-import gym
-from collections import deque
-import tensorflow as tf
-from tensorflow import keras as K
-from Agent import *
-import sys
-import csv
-
-
-
 env = gym.make(ENV_NAME)
 agent = Agent(env.action_space.n, env.observation_space.shape, BATCH_SIZE, \
     GAMMA, GAE_LAMBDA, CLIPPING_LOSS_RATIO, ENTROPY_LOSS_RATIO, TARGET_UPDATE_ALPHA)
@@ -123,7 +119,7 @@ try:
             row[1],row[2] = cnt_episode,r_sum
             if np.mean(scores_window)>=EXPECTED_REWARD:
                 # print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}'.format(cnt_episode-100, np.mean(scores_window)))
-                agent.actor_network.save_weights("../models/"+ENV_NAME+"_"+str(r_sum)+".h5")
+                agent.actor_network.save_weights("../Models/"+ENV_NAME+"_"+str(r_sum)+".h5")
                 row[4],row[5] = cnt_episode-100,np.mean(scores_window)
                 csvwriter.writerow(row)
                 break
