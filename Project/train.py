@@ -15,6 +15,7 @@ parser = argparse.ArgumentParser()
 
 #positional arguments
 parser.add_argument('env_name',help='The Environment name from gym')
+parser.add_argument('env_param',help='Decides the value range of the custom parameters')
 parser.add_argument('expected_reward',type=float , help='The reward at which Environment is considered solved')
 
 #optional arguments
@@ -36,6 +37,7 @@ args = parser.parse_args()
 
 # print(args)
 ENV_NAME = args.env_name
+ENV_PARAM = args.env_param
 EXPECTED_REWARD = args.expected_reward
 
 #ENV_NAME = sys.argv[1]
@@ -81,6 +83,7 @@ env = gym.make(ENV_NAME)
 agent = Agent(env.action_space.n, env.observation_space.shape, BATCH_SIZE, \
     GAMMA, GAE_LAMBDA, CLIPPING_LOSS_RATIO, ENTROPY_LOSS_RATIO, TARGET_UPDATE_ALPHA)
 samples_filled = 0
+
 
 if not os.path.isfile('train_data.csv'):
     with open('train_data.csv','w+') as csvfile:

@@ -12,7 +12,7 @@ test_args=( ["CartPole-v0"]="200.0CartPole-v0.h5" ["CartPole-v1"]="500.0CartPole
 if [ $1 == "train" ]; then
     for env in ${environments[@]}
     do
-        python3 train.py $env ${train_args[$env]}
+        python3 train.py $env 'D' ${train_args[$env]}
     done
 fi
 
