@@ -1,4 +1,3 @@
-from gym import envs
 from gym.envs.classic_control  import CartPoleEnv,MountainCarEnv,AcrobotEnv,PendulumEnv
 import numpy as np
 
