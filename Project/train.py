@@ -15,7 +15,7 @@ parser = argparse.ArgumentParser()
 
 #positional arguments
 parser.add_argument('env_name',help='The Environment name from gym')
-parser.add_argument('env_param',help='Decides the value range of the custom parameters')
+parser.add_argument('env_version',help='Decides the value range of the custom parameters')
 parser.add_argument('expected_reward',type=float , help='The reward at which Environment is considered solved')
 
 #optional arguments
@@ -37,7 +37,7 @@ args = parser.parse_args()
 
 # print(args)
 ENV_NAME = args.env_name
-ENV_PARAM = args.env_param
+ENV_VERSION = args.env_version
 EXPECTED_REWARD = args.expected_reward
 
 #ENV_NAME = sys.argv[1]
@@ -100,7 +100,7 @@ try:
         for cnt_episode in range(TRAIN_ITERATIONS):
             s = env.reset()
             r_sum = 0
-            row = [ENV_NAME,None,None,EXPECTED_REWARD,None,BATCH_SIZE]
+            row = [ENV_NAME,ENV_VERSION,None,None,EXPECTED_REWARD,None,None]
             for cnt_step in range(MAX_EPISODE_LENGTH):
                 # if cnt_episode % RENDER_EVERY == 0 :
                 #     env.render()
@@ -119,11 +119,11 @@ try:
                     break
             scores_window.append(r_sum)
             scores.append(r_sum)
-            row[1],row[2] = cnt_episode,r_sum
+            row[2],row[3] = cnt_episode,r_sum
             if np.mean(scores_window)>=EXPECTED_REWARD:
                 # print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}'.format(cnt_episode-100, np.mean(scores_window)))
                 agent.actor_network.save_weights("../Models/"+ENV_NAME+"_"+str(r_sum)+".h5")
-                row[4],row[5] = cnt_episode-100,np.mean(scores_window)
+                row[5],row[6] = cnt_episode-100,np.mean(scores_window)
                 csvwriter.writerow(row)
                 break
             max_reward = max(max_reward, r_sum)
