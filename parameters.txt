@@ -1,5 +1,6 @@
 Mandatory args:
 ENV_NAME: Gym Environment Name
+ENV_PARAM: (train.py) Choose whether deterministic(D), random(R), or extreme(E)
 EXPECTED_REWARD: (train.py) The reward at which Environment is considered solved
 WEIGHT_FILE: (test.py) Location of the required HDF5 file
 

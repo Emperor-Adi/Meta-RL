@@ -106,7 +106,7 @@ class Agent:
         self.memory.GAE_CALCULATED_Q = True
 
 
-    def update_tartget_network(self):
+    def update_target_network(self):
         alpha = self.TARGET_UPDATE_ALPHA
         actor_weights = np.array(self.actor_network.get_weights())
         actor_tartget_weights = np.array(self.actor_old_network.get_weights())
@@ -139,7 +139,7 @@ class Agent:
 
         self.actor_network.fit(x=[batch_s, batch_advantage, batch_old_prediction], y=batch_a_final, verbose=0)
         self.critic_network.fit(x=batch_s, y=batch_gae_r, epochs=1, verbose=0)
-        self.update_tartget_network()
+        self.update_target_network()
 
 
     def store_transition(self, s, a, s_, r, done):
