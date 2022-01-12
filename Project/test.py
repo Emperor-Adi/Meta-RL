@@ -76,7 +76,7 @@ try:
             state = env.reset()
             while True:
                 action = agent.choose_action(state)
-                #env.render()
+                env.render()
                 state, reward, done, _ = env.step(action)
                 if done:
                     break

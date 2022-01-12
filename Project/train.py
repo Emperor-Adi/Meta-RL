@@ -6,9 +6,11 @@ from collections import deque
 import tensorflow as tf
 from tensorflow import keras as K
 from Agent import *
+from CustomEnvs import SpecialEnv
 import sys
 import csv
 import argparse
+
 
 #Handling command line args
 parser = argparse.ArgumentParser()
@@ -79,7 +81,9 @@ if args.target_update_alpha != None:
 #print('TRAIN_ITERATIONS',TRAIN_ITERATIONS,' MAX_EPISODE_LENGTH ',MAX_EPISODE_LENGTH)
 
 
-env = gym.make(ENV_NAME)
+env_base = gym.make(ENV_NAME)
+env = env_base
+# env = GymWrap(env_base)
 agent = Agent(env.action_space.n, env.observation_space.shape, BATCH_SIZE, \
     GAMMA, GAE_LAMBDA, CLIPPING_LOSS_RATIO, ENTROPY_LOSS_RATIO, TARGET_UPDATE_ALPHA)
 samples_filled = 0
@@ -102,8 +106,8 @@ try:
             r_sum = 0
             row = [ENV_NAME,ENV_VERSION,None,None,EXPECTED_REWARD,None,None]
             for cnt_step in range(MAX_EPISODE_LENGTH):
-                # if cnt_episode % RENDER_EVERY == 0 :
-                #     env.render()
+                if cnt_episode % RENDER_EVERY == 0 :
+                    env.render()
                 a = agent.choose_action(s)
                 s_, r, done, _ = env.step(a)
                 r_sum += r
