@@ -1,5 +1,6 @@
 import numpy as np
 
+ENVS  = ["CartPole-v1", "MountainCar-v0", "Acrobot-v1", "Pendulum-v0", "HalfCheetah-v2", "Hopper-v2"]
 
 BoxSizes = {
     "CartPole-v1": 
