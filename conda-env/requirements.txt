@@ -1,7 +1,7 @@
 Python Version
   3.6 / 3.7
     
-Dependency issuesaila
+Possible dependency issues
   Box2D:
     version: 2.3.10
     Not available from conda repo
