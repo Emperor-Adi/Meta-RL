@@ -15,6 +15,7 @@ class Agent:
         self.CLIPPING_LOSS_RATIO = CLIPPING_LOSS_RATIO
         self.ENTROPY_LOSS_RATIO = ENTROPY_LOSS_RATIO
         self.TARGET_UPDATE_ALPHA = TARGET_UPDATE_ALPHA
+        
         self.critic_network = self._build_critic_network()
         self.actor_network = self._build_actor_network()
         self.actor_old_network = self._build_actor_network()
@@ -87,9 +88,9 @@ class Agent:
 
     def make_gae(self):
         """Generates GAE-Generalized advantage estimation type rewards and pushes them into memory object
-            #delta = r + gamma * V(s') * mask - V(s)  |aka advantage
-            #gae = delta + gamma * lambda * mask * gae |moving average smoothing
-            #return(s,a) = gae + V(s)  |add value of state back to it.
+            #delta = r + gamma * V(s') * mask - V(s)  | aka advantage 
+            #gae = delta + gamma * lambda * mask * gae | moving average smoothing 
+            #return(s,a) = gae + V(s)  | add value of state back to it. 
         """
         gae = 0
         mask = 0
@@ -137,10 +138,6 @@ class Agent:
         self.actor_network.fit(x=[batch_s, batch_advantage, batch_old_prediction], y=batch_a_final, verbose=0)
         self.critic_network.fit(x=batch_s, y=batch_gae_r, epochs=1, verbose=0)
         self.update_target_network()
-
-
-    # def store_transition(self, s, a, s_, r, done):
-    #     self.memory.store(s, a, s_, r, done)
 
 
     def get_v(self,state):

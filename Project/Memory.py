@@ -11,6 +11,14 @@ class Memory:
         self.GAE_CALCULATED_Q = False
 
 
+    def store(self, s, a, s_, r, done):
+        self.batch_s.append(s)
+        self.batch_a.append(a)
+        self.batch_r.append(r)
+        self.batch_s_.append(s_)
+        self.batch_done.append(done)
+
+
     def get_batch(self,batch_size):
         s,a,r,gae_r,s_,d = [],[],[],[],[],[]
         for _ in range(batch_size):
@@ -22,14 +30,6 @@ class Memory:
             s_.append(self.batch_s_[pos])
             d.append(self.batch_done[pos])
         return s,a,r,gae_r,s_,d
-
-
-    def store(self, s, a, s_, r, done):
-        self.batch_s.append(s)
-        self.batch_a.append(a)
-        self.batch_r.append(r)
-        self.batch_s_.append(s_)
-        self.batch_done.append(done)
 
 
     def clear(self):

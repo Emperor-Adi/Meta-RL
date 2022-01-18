@@ -114,7 +114,7 @@ with open('train_data.csv','a+') as csvfile:
             r_sum += r
             agent.memory.store(s, a, s_, r, done)
             samples_filled += 1
-            if samples_filled % TRAJECTORY_BUFFER_SIZE == 0 and samples_filled != 0:
+            if samples_filled == TRAJECTORY_BUFFER_SIZE:
                 for _ in range(TRAJECTORY_BUFFER_SIZE // BATCH_SIZE):
                     agent.train_network()
                 agent.memory.clear()
