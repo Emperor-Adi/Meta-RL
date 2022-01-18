@@ -42,43 +42,46 @@ ENV_NAME = "CartPole-v1"
 ENV_VERSION = "Deterministic"
 EXPECTED_REWARD = 475
 
-#ENV_NAME = sys.argv[1]
-TRAIN_ITERATIONS = 5000
-MAX_EPISODE_LENGTH = 1000
-TRAJECTORY_BUFFER_SIZE = 32
-BATCH_SIZE = 16
-RENDER_EVERY = 1
-#EXPECTED_REWARD = int(sys.argv[2])
 
+TRAIN_ITERATIONS = 5000
 if args.train_iterations != None :
     TRAIN_ITERATIONS = args.train_iterations
+
+MAX_EPISODE_LENGTH = 1000
 if args.max_episode_length !=None :
     MAX_EPISODE_LENGTH = args.max_episode_length
+
+TRAJECTORY_BUFFER_SIZE = 32
 if args.trajectory_buffer_size !=None :
     TRAJECTORY_BUFFER_SIZE = args.trajectory_buffer_size
+
+BATCH_SIZE = 16
 if args.batch_size !=None :
     BATCH_SIZE = args.batch_size
+
+RENDER_EVERY = 5
 if args.render_every !=None :
     RENDER_EVERY = args.render_every
 
 GAMMA=0.99
-GAE_LAMBDA=0.95
-CLIPPING_LOSS_RATIO=0.1
-ENTROPY_LOSS_RATIO=0.001
-TARGET_UPDATE_ALPHA=0.9
-
 if args.gamma != None:
     GAMMA = args.gamma
+
+GAE_LAMBDA=0.95
 if args.gae_lambda != None:
     GAE_LAMBDA = args.gae_lambda
+
+CLIPPING_LOSS_RATIO=0.1
 if args.clipping_loss_ratio != None:
     CLIPPING_LOSS_RATIO = args.clipping_loss_ratio
+
+ENTROPY_LOSS_RATIO=0.001
 if args.entropy_loss_ratio != None:
     ENTROPY_LOSS_RATIO = args.entropy_loss_ratio
+
+TARGET_UPDATE_ALPHA=0.9
 if args.target_update_alpha != None:
     TARGET_UPDATE_ALPHA = args.target_update_alpha
-
-#print('TRAIN_ITERATIONS',TRAIN_ITERATIONS,' MAX_EPISODE_LENGTH ',MAX_EPISODE_LENGTH)
 
 
 env = SpecialEnv(gym.make(ENV_NAME),ENV_NAME,ENV_VERSION)
@@ -99,17 +102,17 @@ with open('train_data.csv','a+') as csvfile:
     scores_window = deque(maxlen=100)
     scores = []
     max_reward = -500
-    for cnt_episode in range(TRAIN_ITERATIONS):
+    for ep_count in range(TRAIN_ITERATIONS):
         s = env.reset()
         r_sum = 0
         row = [ENV_NAME,ENV_VERSION,None,None,EXPECTED_REWARD,None,None]
-        for cnt_step in range(MAX_EPISODE_LENGTH):
-            # if cnt_episode % RENDER_EVERY == 0 :
+        for count_step in range(MAX_EPISODE_LENGTH):
+            # if ep_count % RENDER_EVERY == 0 :
             #     env.render()
             a = agent.choose_action(s)
             s_, r, done, _ = env.step(a)
             r_sum += r
-            agent.store_transition(s, a, s_, r, done)
+            agent.memory.store(s, a, s_, r, done)
             samples_filled += 1
             if samples_filled % TRAJECTORY_BUFFER_SIZE == 0 and samples_filled != 0:
                 for _ in range(TRAJECTORY_BUFFER_SIZE // BATCH_SIZE):
@@ -121,15 +124,15 @@ with open('train_data.csv','a+') as csvfile:
                 break
         scores_window.append(r_sum)
         scores.append(r_sum)
-        row[2],row[3] = cnt_episode,r_sum
+        row[2],row[3] = ep_count,r_sum
         if np.mean(scores_window)>=EXPECTED_REWARD:
-            # print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}'.format(cnt_episode-100, np.mean(scores_window)))
+            # print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}'.format(ep_count-100, np.mean(scores_window)))
             agent.actor_network.save_weights("../Models/"+ENV_NAME+"_"+ENV_VERSION+"_"+str(r_sum)+".h5")
-            row[5],row[6] = cnt_episode-100,np.mean(scores_window)
+            row[5],row[6] = ep_count-100,np.mean(scores_window)
             csvwriter.writerow(row)
             break
         max_reward = max(max_reward, r_sum)
-        # print('Episodes:', cnt_episode, 'Episodic_Reward:', r_sum)
+        # print('Episodes:', ep_count, 'Episodic_Reward:', r_sum)
         csvwriter.writerow(row)
 
 # except :

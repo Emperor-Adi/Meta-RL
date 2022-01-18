@@ -1,11 +1,4 @@
 import numpy as np
-import os
-import time
-import gym
-from collections import deque
-import tensorflow as tf
-from tensorflow import keras as K
-
 
 class Memory:
     def __init__(self):
@@ -19,8 +12,8 @@ class Memory:
 
 
     def get_batch(self,batch_size):
+        s,a,r,gae_r,s_,d = [],[],[],[],[],[]
         for _ in range(batch_size):
-            s,a,r,gae_r,s_,d = [],[],[],[],[],[]
             pos = np.random.randint(len(self.batch_s))
             s.append(self.batch_s[pos])
             a.append(self.batch_a[pos])
@@ -49,5 +42,5 @@ class Memory:
 
 
     @property
-    def cnt_samples(self):
+    def sample_count(self):
         return len(self.batch_s)

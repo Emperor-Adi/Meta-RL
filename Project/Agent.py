@@ -1,10 +1,7 @@
 import numpy as np
-import os
 import time
-import gym
-from collections import deque
 import tensorflow as tf
-from tensorflow import keras as K
+from tensorflow import keras
 from Memory import *
 
 class Agent:
@@ -34,15 +31,15 @@ class Agent:
         The other two inputs are exclusivly used for the custom loss function (ppo_loss).
         """
 
-        state = K.layers.Input(shape=self.state_dim,name='state_input')
-        advantage = K.layers.Input(shape=(1,),name='advantage_input')
-        old_prediction = K.layers.Input(shape=(self.action_n,),name='old_prediction_input')
+        state = keras.layers.Input(shape=self.state_dim,name='state_input')
+        advantage = keras.layers.Input(shape=(1,),name='advantage_input')
+        old_prediction = keras.layers.Input(shape=(self.action_n,),name='old_prediction_input')
         rnn_in = tf.expand_dims(state, [0])
-        lstm = K.layers.LSTM(24,activation='relu')(rnn_in)
-        dense = K.layers.Dense(32,activation='relu',name='dense1')(lstm)
-        dense = K.layers.Dense(32,activation='relu',name='dense2')(dense)
-        policy = K.layers.Dense(self.action_n, activation="softmax", name="actor_output_layer")(dense)
-        actor_network = K.Model(inputs = [state,advantage,old_prediction], outputs = policy)
+        lstm = keras.layers.LSTM(24,activation='relu')(rnn_in)
+        dense = keras.layers.Dense(32,activation='relu',name='dense1')(lstm)
+        dense = keras.layers.Dense(32,activation='relu',name='dense2')(dense)
+        policy = keras.layers.Dense(self.action_n, activation="softmax", name="actor_output_layer")(dense)
+        actor_network = keras.Model(inputs = [state,advantage,old_prediction], outputs = policy)
         actor_network.compile(
             optimizer='Adam',
             loss = self.ppo_loss(advantage=advantage,old_prediction=old_prediction)
@@ -57,11 +54,11 @@ class Agent:
         The critic is a simple scalar prediction on the state value(output) given an state(input)
         Loss is simply mse
         """
-        state = K.layers.Input(shape=self.state_dim,name='state_input')
-        dense = K.layers.Dense(32,activation='relu',name='dense1')(state)
-        dense = K.layers.Dense(32,activation='relu',name='dense2')(dense)
-        V = K.layers.Dense(1, name="actor_output_layer")(dense)
-        critic_network = K.Model(inputs=state, outputs=V)
+        state = keras.layers.Input(shape=self.state_dim,name='state_input')
+        dense = keras.layers.Dense(32,activation='relu',name='dense1')(state)
+        dense = keras.layers.Dense(32,activation='relu',name='dense2')(dense)
+        V = keras.layers.Dense(1, name="actor_output_layer")(dense)
+        critic_network = keras.Model(inputs=state, outputs=V)
         critic_network.compile(optimizer='Adam',loss = 'mean_squared_error')
         critic_network.summary()
         time.sleep(1.0)
@@ -79,11 +76,11 @@ class Agent:
             prob = y_true * y_pred
             old_prob = y_true * old_prediction
             ratio = prob / (old_prob + 1e-10)
-            clip_ratio = K.backend.clip(ratio, min_value=1 - self.CLIPPING_LOSS_RATIO, max_value=1 + self.CLIPPING_LOSS_RATIO)
+            clip_ratio = keras.backend.clip(ratio, min_value=1 - self.CLIPPING_LOSS_RATIO, max_value=1 + self.CLIPPING_LOSS_RATIO)
             surrogate1 = ratio * advantage
             surrogate2 = clip_ratio * advantage
-            entropy_loss = (prob * K.backend.log(prob + 1e-10))
-            ppo_loss = -K.backend.mean(K.backend.minimum(surrogate1,surrogate2) + self.ENTROPY_LOSS_RATIO * entropy_loss)
+            entropy_loss = (prob * keras.backend.log(prob + 1e-10))
+            ppo_loss = -keras.backend.mean(keras.backend.minimum(surrogate1,surrogate2) + self.ENTROPY_LOSS_RATIO * entropy_loss)
             return ppo_loss
         return loss
 
@@ -96,7 +93,7 @@ class Agent:
         """
         gae = 0
         mask = 0
-        for i in reversed(range(self.memory.cnt_samples)):
+        for i in reversed(range(self.memory.sample_count)):
             mask = 0 if self.memory.batch_done[i] else 1
             v = self.get_v(self.memory.batch_s[i])
             delta = self.memory.batch_r[i] + self.GAMMA * self.get_v(self.memory.batch_s_[i]) * mask - v
@@ -132,7 +129,7 @@ class Agent:
         batch_gae_r = np.vstack(gae_r)
         batch_v = self.get_v(batch_s)
         batch_advantage = batch_gae_r - batch_v
-        batch_advantage = K.utils.normalize(batch_advantage) #
+        batch_advantage = keras.utils.normalize(batch_advantage) #
         batch_old_prediction = self.get_old_prediction(batch_s)
         batch_a_final = np.zeros(shape=(len(batch_a), self.action_n))
         batch_a_final[:, batch_a.flatten()] = 1
@@ -142,8 +139,8 @@ class Agent:
         self.update_target_network()
 
 
-    def store_transition(self, s, a, s_, r, done):
-        self.memory.store(s, a, s_, r, done)
+    # def store_transition(self, s, a, s_, r, done):
+    #     self.memory.store(s, a, s_, r, done)
 
 
     def get_v(self,state):
