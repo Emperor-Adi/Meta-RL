@@ -20,17 +20,13 @@ class Memory:
 
 
     def get_batch(self,batch_size):
-        # s,a,r,gae_r,s_,d = [],[],[],[],[],[]
-        for _ in range(batch_size):
-            s,a,r,gae_r,s_,d = [],[],[],[],[],[]
+        s,a,gae_r = [],[],[]
+        for pos in range(batch_size):
             pos = np.random.randint(len(self.batch_s))
             s.append(self.batch_s[pos])
             a.append(self.batch_a[pos])
-            r.append(self.batch_r[pos])
             gae_r.append(self.batch_gae_r[pos])
-            s_.append(self.batch_s_[pos])
-            d.append(self.batch_done[pos])
-        return s,a,r,gae_r,s_,d
+        return (s, a, gae_r)
 
 
     def clear(self):

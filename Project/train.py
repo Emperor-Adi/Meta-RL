@@ -105,10 +105,10 @@ def main():
         for ep_count in range(TRAIN_ITERATIONS):
             s = env.reset()
             r_sum = 0
-            row = [ENV_NAME,ENV_VERSION,None,None,EXPECTED_REWARD,None,None]
+            row = [ENV_NAME,ENV_VERSION,None,None,EXPECTED_REWARD,None,BATCH_SIZE]
             for count_step in range(MAX_EPISODE_LENGTH):
-                # if ep_count % RENDER_EVERY == 0 :
-                #     env.render()
+                if ep_count % RENDER_EVERY == 0 :
+                    env.render()
                 a = agent.choose_action(s)
                 s_, r, done, _ = env.step(a)
                 r_sum += r
