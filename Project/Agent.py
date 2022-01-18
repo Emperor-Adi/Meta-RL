@@ -1,8 +1,11 @@
+import imp
 import numpy as np
 import time
 import tensorflow as tf
 from tensorflow import keras
 from Memory import *
+from tensorflow.python.framework.ops import disable_eager_execution
+
 
 class Agent:
     def __init__(self,action_n, state_dim, training_batch_size,GAMMA=0.99, \
@@ -15,7 +18,7 @@ class Agent:
         self.CLIPPING_LOSS_RATIO = CLIPPING_LOSS_RATIO
         self.ENTROPY_LOSS_RATIO = ENTROPY_LOSS_RATIO
         self.TARGET_UPDATE_ALPHA = TARGET_UPDATE_ALPHA
-        
+        disable_eager_execution()
         self.critic_network = self._build_critic_network()
         self.actor_network = self._build_actor_network()
         self.actor_old_network = self._build_actor_network()
@@ -43,8 +46,9 @@ class Agent:
         actor_network = keras.Model(inputs = [state,advantage,old_prediction], outputs = policy)
         actor_network.compile(
             optimizer='Adam',
-            loss = self.ppo_loss(advantage=advantage,old_prediction=old_prediction)
-            )
+            loss = self.ppo_loss(advantage=advantage,old_prediction=old_prediction),
+            experimental_run_tf_function=False
+        )
         actor_network.summary()
         time.sleep(1.0)
         return actor_network
@@ -60,7 +64,11 @@ class Agent:
         dense = keras.layers.Dense(32,activation='relu',name='dense2')(dense)
         V = keras.layers.Dense(1, name="actor_output_layer")(dense)
         critic_network = keras.Model(inputs=state, outputs=V)
-        critic_network.compile(optimizer='Adam',loss = 'mean_squared_error')
+        critic_network.compile(
+            optimizer='Adam',
+            loss = 'mean_squared_error',
+            experimental_run_tf_function=False
+        )
         critic_network.summary()
         time.sleep(1.0)
         return critic_network
@@ -87,7 +95,7 @@ class Agent:
 
 
     def make_gae(self):
-        """Generates GAE-Generalized advantage estimation type rewards and pushes them into memory object
+        """Generates GAE-Generalized Advantage Estimation type rewards and pushes them into memory object
             #delta = r + gamma * V(s') * mask - V(s)  | aka advantage 
             #gae = delta + gamma * lambda * mask * gae | moving average smoothing 
             #return(s,a) = gae + V(s)  | add value of state back to it. 
@@ -134,7 +142,7 @@ class Agent:
         batch_old_prediction = self.get_old_prediction(batch_s)
         batch_a_final = np.zeros(shape=(len(batch_a), self.action_n))
         batch_a_final[:, batch_a.flatten()] = 1
-
+        print(type(batch_s),type(batch_advantage),type(batch_old_prediction),type(batch_a_final))
         self.actor_network.fit(x=[batch_s, batch_advantage, batch_old_prediction], y=batch_a_final, verbose=0)
         self.critic_network.fit(x=batch_s, y=batch_gae_r, epochs=1, verbose=0)
         self.update_target_network()
