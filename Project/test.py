@@ -1,15 +1,10 @@
 import argparse
+from datetime import datetime
 import numpy as np
 import os
-import time
 import gym
-from collections import deque
-import tensorflow as tf
-from tensorflow import keras as K
 from Agent import *
-import sys
 import csv
-import json
 
 parser = argparse.ArgumentParser()
 
@@ -61,14 +56,14 @@ samples_filled = 0
 
 agent.actor_network.load_weights(WEIGHT_FILE)
 
-if not os.path.isfile('test_data.csv'):
-    with open('test_data.csv','w+') as csvfile:
+if not os.path.isfile('Logs/test_data.csv'):
+    with open('Logs/test_data.csv','w+') as csvfile:
         csvwriter = csv.writer(csvfile)
         fields = ['Gym Environment','Episode','Episodic Reward','Weight File']
         csvwriter.writerow(fields)
 
 try:
-    with open('test_data.csv','a+') as csvfile:
+    with open('Logs/test_data.csv','a+') as csvfile:
         csvwriter = csv.writer(csvfile,lineterminator="\n")
         row = [ENV_NAME,0,0,WEIGHT_FILE[7:]]
         for i in range(20):
@@ -86,7 +81,7 @@ try:
             csvwriter.writerow(row)
 
 except:
-    with open('errorlogs.log','a+') as errlog:
-        errlog.writelines("Test Error: "+str(ENV_NAME)+" "+str(WEIGHT_FILE)+"\n")
+    with open('Logs/errorlogs.log','a+') as errlog:
+        errlog.writelines("Test Error: "+str(ENV_NAME)+" "+str(WEIGHT_FILE)+"\n"+"TimeStamp: "+str(datetime.now())+"\n\n")
 
 env.close()

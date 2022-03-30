@@ -1,7 +1,8 @@
 from gym import Wrapper
-from BoxScript import BoxSizes,ENVS
+import numpy as np
+from BoxScript import Boxes
 
-
+ENVS = list(Boxes.keys())
 
 class SpecialEnv(Wrapper):
     def __init__(self, env,  env_name, env_version):
@@ -20,19 +21,19 @@ class SpecialEnv(Wrapper):
     
     def implversion(self):
         if self.env_name == ENVS[0]:
-            self.force_mag = BoxSizes[self.env_name][self.env_version][0]
-            self.length= BoxSizes[self.env_name][self.env_version][1]
-            self.masspole= BoxSizes[self.env_name][self.env_version][2]
+            self.force_mag = Boxes[self.env_name][self.env_version][0]
+            self.length= Boxes[self.env_name][self.env_version][1]
+            self.masspole= Boxes[self.env_name][self.env_version][2]
         elif self.env_name == ENVS[1]:
-            self.force = BoxSizes[self.env_name][self.env_version][0]
-            self.gravity = BoxSizes[self.env_name][self.env_version][1]
+            self.force = Boxes[self.env_name][self.env_version][0]
+            self.gravity = Boxes[self.env_name][self.env_version][1]
         elif self.env_name == ENVS[2]:
-            self.LINK_LENGTH_1 = self.LINK_LENGTH_2 = BoxSizes[self.env_name][self.env_version][0]
-            self.LINK_MASS_1 = self.LINK_MASS_2 = BoxSizes[self.env_name][self.env_version][1]
-            self.LINK_MOI = BoxSizes[self.env_name][self.env_version][2]
+            self.LINK_LENGTH_1 = self.LINK_LENGTH_2 = Boxes[self.env_name][self.env_version][0]
+            self.LINK_MASS_1 = self.LINK_MASS_2 = Boxes[self.env_name][self.env_version][1]
+            self.LINK_MOI = Boxes[self.env_name][self.env_version][2]
         elif self.env_name == ENVS[3]:
-            self.l = BoxSizes[self.env_name][self.env_version][0]
-            self.m = BoxSizes[self.env_name][self.env_version][1]
+            self.l = Boxes[self.env_name][self.env_version][0]
+            self.m = Boxes[self.env_name][self.env_version][1]
         elif self.env_name == ENVS[4]:
             pass
         elif self.env_name == ENVS[5]:

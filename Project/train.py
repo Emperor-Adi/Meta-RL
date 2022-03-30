@@ -1,3 +1,4 @@
+from cmath import exp
 import numpy as np
 import os
 import gym
@@ -13,9 +14,9 @@ def main():
     parser = argparse.ArgumentParser()
 
     #positional arguments
-    parser.add_argument('env_name',help='The Environment name from gym')
-    parser.add_argument('env_version',help='Decides the value range of the custom parameters')
-    parser.add_argument('expected_reward',type=float , help='The reward at which Environment is considered solved')
+    parser.add_argument('--env_name',help='The Environment name from gym')
+    parser.add_argument('--env_version',help='Decides the value range of the custom parameters')
+    parser.add_argument('--expected_reward',type=float , help='The reward at which Environment is considered solved')
 
 
     #optional arguments
@@ -59,7 +60,7 @@ def main():
     if args.batch_size !=None :
         BATCH_SIZE = args.batch_size
 
-    RENDER_EVERY = 5
+    RENDER_EVERY = 10
     if args.render_every !=None :
         RENDER_EVERY = args.render_every
 
@@ -90,14 +91,14 @@ def main():
     samples_filled = 0
 
 
-    if not os.path.isfile('train_data.csv'):
-        with open('train_data.csv','w+') as csvfile:
+    if not os.path.isfile('Logs/train_data.csv'):
+        with open('Logs/train_data.csv','w+') as csvfile:
             csvwriter = csv.writer(csvfile)
             fields = ['Gym Environment','Episode','Episodic Reward','Expected Reward','Solved In','Batch Size']
             csvwriter.writerow(fields)
 
     try:
-        with open('train_data.csv','a+') as csvfile:
+        with open('Logs/train_data.csv','a+') as csvfile:
             csvwriter = csv.writer(csvfile,lineterminator="\n")
             scores_window = deque(maxlen=100)
             scores = []
@@ -107,8 +108,8 @@ def main():
                 r_sum = 0
                 row = [ENV_NAME,ENV_VERSION,None,None,EXPECTED_REWARD,None,BATCH_SIZE]
                 for count_step in range(MAX_EPISODE_LENGTH):
-                    if ep_count % RENDER_EVERY == 0 :
-                        env.render()
+                    # if count_step % RENDER_EVERY == 0 :
+                    #     env.render()
                     a = agent.choose_action(s)
                     s_, r, done, _ = env.step(a)
                     r_sum += r
@@ -127,7 +128,7 @@ def main():
                 row[2],row[3] = ep_count,r_sum
                 if np.mean(scores_window)>=EXPECTED_REWARD:
                     # print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}'.format(ep_count-100, np.mean(scores_window)))
-                    agent.actor_network.save_weights("../Models/"+ENV_NAME+"_"+ENV_VERSION+"_"+str(r_sum)+".h5")
+                    agent.actor_network.save_weights("Models/"+ENV_NAME+"_"+ENV_VERSION+"_"+str(r_sum)+".h5")
                     row[5],row[6] = ep_count-100,np.mean(scores_window)
                     csvwriter.writerow(row)
                     break
@@ -135,9 +136,10 @@ def main():
                 # print('Episodes:', ep_count, 'Episodic_Reward:', r_sum)
                 csvwriter.writerow(row)
 
-    except :
-        with open('errorlogs.log','a+') as errlog:
-            errlog.writelines("Test Error: "+str(ENV_NAME)+" "+str(EXPECTED_REWARD)+str(datetime.now())+"\n")
+    except Exception as e:
+        print(e)
+        with open('Logs/errorlogs.log','a+') as errlog:
+            errlog.writelines("Train Error: "+str(ENV_NAME)+" "+str(EXPECTED_REWARD)+"\n"+"TimeStamp: "+str(datetime.now())+"\n\n")
 
 if __name__ == '__main__':
     main()
