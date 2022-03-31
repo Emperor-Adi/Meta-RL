@@ -4,7 +4,7 @@ from  Project.BoxScript import Boxes
 import argparse
 
 cwd = os.getcwd()
-py_path = "D:/Work/Installations/anaconda3/envs/RL/python.exe"
+# py_path = "D:/Work/Installations/anaconda3/envs/RL/python.exe"
 
 parser = argparse.ArgumentParser()
 parser.add_argument('env_idx',type=int,help='Environment identifier')
@@ -15,4 +15,4 @@ EXP_REWARD = Boxes[ENV_NAME]["Expected Reward"]
 box_types = ["Deterministic","Random","Extreme"]
 
 for BOX_TYPE in box_types:
-    subprocess.run("{} ./Project/train.py --env_name {} --env_version {} --expected_reward {}".format(py_path, ENV_NAME, BOX_TYPE, EXP_REWARD), cwd=cwd, shell=True)
+    subprocess.run("python ./Project/train.py --env_name {} --env_version {} --expected_reward {}".format(ENV_NAME, BOX_TYPE, EXP_REWARD), cwd=cwd, shell=True)
