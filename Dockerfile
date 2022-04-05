@@ -5,6 +5,7 @@ RUN apt-get update -q \
 	&& DEBIAN_FRONTEND=noninteractive apt-get install -y \
 	curl \
 	git \
+	unzip \
 	libgl1-mesa-dev \
 	libgl1-mesa-glx \
 	libglew-dev \
@@ -14,6 +15,11 @@ RUN apt-get update -q \
 	vim \
 	wget \
 	xpra \
+	xvfb \
+	patchelf \
+	ffmpeg \
+	cmake \
+	swig \
 	xserver-xorg-dev \
 	&& apt-get clean \
 	&& rm -rf /var/lib/apt/lists/*
