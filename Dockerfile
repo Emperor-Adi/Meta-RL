@@ -29,7 +29,7 @@ RUN apt-get update -q \
 RUN mkdir /root/.mujoco && \
     cd /root/.mujoco  && \
     curl -O https://www.roboti.us/download/mujoco200_linux.zip && \
-    unzip mjpro200_linux.zip && \
+    unzip mujoco200_linux.zip && \
     echo DUMMY_KEY > /root/.mujoco/mjkey.txt
 
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/root/.mujoco/mjpro200/bin
