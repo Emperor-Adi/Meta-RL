@@ -91,7 +91,7 @@ def main():
     samples_filled = 0
 
     try:
-        with open('Logs/train_data_'+str(ENV_NAME)+str(datetime.now())+'.csv','w+') as csvfile:
+        with open('./Logs/train_data_'+str(ENV_NAME)+str(datetime.now())+'.csv','w+') as csvfile:
             csvwriter = csv.writer(csvfile,lineterminator="\n")
             fields = ['Gym Environment','Episode','Episodic Reward','Expected Reward','Solved In','Batch Size']
             csvwriter.writerow(fields)
@@ -133,7 +133,7 @@ def main():
 
     except Exception as e:
         print(e)
-        with open('Logs/errorlogs.log','a+') as errlog:
+        with open('./Logs/errorlogs.log','a+') as errlog:
             errlog.writelines("Train Error: "+str(ENV_NAME)+" "+str(EXPECTED_REWARD)+"\n"+"TimeStamp: "+str(datetime.now())+"\n\n")
 
 if __name__ == '__main__':
