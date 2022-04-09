@@ -44,7 +44,7 @@ def main():
     # EXPECTED_REWARD = 475
 
 
-    TRAIN_ITERATIONS = 5000
+    TRAIN_ITERATIONS = 15000
     if args.train_iterations != None :
         TRAIN_ITERATIONS = args.train_iterations
 
@@ -90,16 +90,11 @@ def main():
         GAMMA, GAE_LAMBDA, CLIP_LOSS_RATIO, ENTROPY_LOSS_RATIO, ALPHA)
     samples_filled = 0
 
-
-    if not os.path.isfile('Logs/train_data.csv'):
-        with open('Logs/train_data.csv','w+') as csvfile:
-            csvwriter = csv.writer(csvfile)
+    try:
+        with open('Logs/train_data_'+str(ENV_NAME)+str(datetime.now())+'.csv','w+') as csvfile:
+            csvwriter = csv.writer(csvfile,lineterminator="\n")
             fields = ['Gym Environment','Episode','Episodic Reward','Expected Reward','Solved In','Batch Size']
             csvwriter.writerow(fields)
-
-    try:
-        with open('Logs/train_data.csv','a+') as csvfile:
-            csvwriter = csv.writer(csvfile,lineterminator="\n")
             scores_window = deque(maxlen=100)
             scores = []
             max_reward = -500
@@ -113,7 +108,7 @@ def main():
                     a = agent.choose_action(s)
                     s_, r, done, _ = env.step(a)
                     r_sum += r
-                    agent.memory.store(s, a, s_, r, done)
+                    agent.store_transition(s, a, s_, r, done)
                     samples_filled += 1
                     if samples_filled == TRAJECTORY_BUFFER_SIZE:
                         for _ in range(TRAJECTORY_BUFFER_SIZE // BATCH_SIZE):
@@ -133,7 +128,7 @@ def main():
                     csvwriter.writerow(row)
                     break
                 max_reward = max(max_reward, r_sum)
-                # print('Episodes:', ep_count, 'Episodic_Reward:', r_sum)
+                print('Episodes:', ep_count, 'Episodic_Reward:', r_sum)
                 csvwriter.writerow(row)
 
     except Exception as e:

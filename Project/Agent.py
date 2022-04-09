@@ -2,6 +2,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 from Memory import *
+import time
 from tensorflow.python.framework.ops import disable_eager_execution
 
 class Agent:
@@ -37,6 +38,7 @@ class Agent:
 		critic_network = keras.Model(inputs=state, outputs=V)
 		critic_network.compile(optimizer='Adam',loss = 'mean_squared_error')
 		#critic_network.summary()
+		time.sleep(0.5)
 		return critic_network
 
 
@@ -47,7 +49,7 @@ class Agent:
 			:advantage: advantage, needed to process algorithm
 			:old_prediction: prediction from "old network", needed to process algorithm
 		"""
-		def loss_fn(y_true, y_pred):
+		def loss(y_true, y_pred):
 			prob = y_true * y_pred
 			old_prob = y_true * old_prediction
 			ratio = prob / (old_prob + 1e-10)
@@ -57,7 +59,7 @@ class Agent:
 			entropy_loss = (prob * keras.backend.log(prob + 1e-10))
 			ppo_loss = -keras.backend.mean(keras.backend.minimum(surrogate1,surrogate2) + self.ENTROPY_LOSS_RATIO * entropy_loss)
 			return ppo_loss
-		return loss_fn
+		return loss
 
 
 	def _build_actor_network(self):
@@ -79,6 +81,7 @@ class Agent:
 			loss = self.ppo_loss(advantage=advantage,old_prediction=old_prediction)
 			)
 		#actor_network.summary()
+		time.sleep(0.5)
 		return actor_network
 
 
@@ -113,13 +116,17 @@ class Agent:
 		self.memory.GAE_CALCULATED_Q = True
 
 
-	def get_old_prediction(self, states):
-		return_batch = []
-		for state in states:
-			state = np.reshape(state, (-1, self.state_dim[0]))
-			return_batch.append(self.actor_old_network.predict_on_batch \
-				([state, self.dummy_advantage, self.dummy_old_prediciton])[0])
-		return np.array(return_batch)
+	# def get_old_prediction(self, states):
+	# 	return_batch = []
+	# 	for state in states:
+	# 		state = np.reshape(state, (-1, self.state_dim[0]))
+	# 		return_batch.append(self.actor_old_network.predict_on_batch \
+	# 			([state, self.dummy_advantage, self.dummy_old_prediciton])[0])
+	# 	return np.array(return_batch)
+
+	def get_old_prediction(self, state):
+		state = np.reshape(state, (-1, self.state_dim[0]))
+		return self.actor_old_network.predict_on_batch([state,self.dummy_advantage, self.dummy_old_prediciton])
 
 
 	def update_target_network(self):
@@ -129,22 +136,21 @@ class Agent:
 		new_weights = alpha*actor_weights + (1-alpha)*actor_target_weights
 		self.actor_old_network.set_weights(new_weights)
 
+	def store_transition(self, s, a, s_, r, done):
+		self.memory.store(s, a, s_, r, done)
 
 	def train_network(self):
 		if not self.memory.GAE_CALCULATED_Q:
 			self.make_gae()
 		
-		states,actions,gae_rewards = self.memory.get_batch(self.BATCH_SIZE)
+		states,actions,rewards,gae_rewards,s_,d = self.memory.get_batch(self.BATCH_SIZE)
 		batch_s = np.vstack(states)
 		batch_a = np.vstack(actions)
 		batch_gae_r = np.vstack(gae_rewards)
-
 		batch_v = self.get_v(batch_s)
 		batch_adv = batch_gae_r - batch_v
 		batch_adv = keras.utils.normalize(batch_adv)
-		
 		batch_old_preds = self.get_old_prediction(batch_s)
-		batch_old_preds = keras.utils.normalize(batch_old_preds)
 
 		batch_a_final = np.zeros(shape=(len(batch_a),self.action_n))
 		batch_a_final[:, batch_a.flatten()] = 1

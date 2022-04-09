@@ -106,7 +106,7 @@ Boxes = {
 
 	"Pendulum-v1":
 	{
-		"Expected Reward": None,
+		"Expected Reward": -100,
 
 		"Deterministic":
 		[
