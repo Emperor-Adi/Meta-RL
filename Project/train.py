@@ -44,11 +44,11 @@ def main():
     # EXPECTED_REWARD = 475
 
 
-    TRAIN_ITERATIONS = 15000
+    TRAIN_ITERATIONS = 40000
     if args.train_iterations != None :
         TRAIN_ITERATIONS = args.train_iterations
 
-    MAX_EPISODE_LENGTH = 1000
+    MAX_EPISODE_LENGTH = 16000
     if args.max_episode_length !=None :
         MAX_EPISODE_LENGTH = args.max_episode_length
 
