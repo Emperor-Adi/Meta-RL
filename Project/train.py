@@ -48,7 +48,7 @@ def main():
     if args.train_iterations != None :
         TRAIN_ITERATIONS = args.train_iterations
 
-    MAX_EPISODE_LENGTH = 16000
+    MAX_EPISODE_LENGTH = 1000
     if args.max_episode_length !=None :
         MAX_EPISODE_LENGTH = args.max_episode_length
 
