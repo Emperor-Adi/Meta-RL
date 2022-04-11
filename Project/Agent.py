@@ -94,7 +94,7 @@ class Agent:
         """
         gae = 0
         mask = 0
-        for i in reversed(range(self.memory.cnt_samples)):
+        for i in reversed(range(self.memory.sample_count)):
             mask = 0 if self.memory.batch_done[i] else 1
             v = self.get_v(self.memory.batch_s[i])
             delta = self.memory.batch_r[i] + self.GAMMA * self.get_v(self.memory.batch_s_[i]) * mask - v
