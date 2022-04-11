@@ -91,7 +91,7 @@ def main():
     samples_filled = 0
 
     try:
-        with open('./Logs/train_data_'+str(ENV_NAME)+str(datetime.now())+'.csv','w+') as csvfile:
+        with open('./Logs/train_data_'+ENV_NAME+'_'+ENV_VERSION+'_'+str(datetime.now())+'.csv','w+') as csvfile:
             csvwriter = csv.writer(csvfile,lineterminator="\n")
             fields = ['Gym Environment','Episode','Episodic Reward','Expected Reward','Solved In','Batch Size']
             csvwriter.writerow(fields)
