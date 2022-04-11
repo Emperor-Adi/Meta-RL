@@ -128,11 +128,11 @@ def main():
                     csvwriter.writerow(row)
                     break
                 max_reward = max(max_reward, r_sum)
-                print('Episodes:', ep_count, 'Episodic_Reward:', r_sum)
+                # print('Episodes:', ep_count, 'Episodic_Reward:', r_sum)
                 csvwriter.writerow(row)
 
     except Exception as e:
-        print(e)
+        # print(e)
         with open('./Logs/errorlogs.log','a+') as errlog:
             errlog.writelines("Train Error: "+str(ENV_NAME)+" "+str(ENV_VERSION)+" "+str(EXPECTED_REWARD))
             errlog.writelines("\nTimeStamp: "+str(datetime.now())+"\n"+str(e)+"\n\n")
