@@ -110,8 +110,8 @@ class Agent:
 			mask = 0 if self.memory.batch_done[i] else 1
 			v = self.get_v(self.memory.batch_s[i])
 			v_ = self.get_v(self.memory.batch_s_[i])
-			delta = (self.memory.batch_r[i] + v_ * self.GAMMA * mask - v)
-			gae = (delta + self.GAMMA * self.GAE_LAMBDA * mask * gae)
+			delta = self.memory.batch_r[i] + self.GAMMA * v_ * mask - v
+			gae = delta + self.GAMMA * self.GAE_LAMBDA * mask * gae
 			self.memory.batch_gae_r.append(gae + v)
 		self.memory.GAE_CALCULATED_Q = True
 
@@ -131,8 +131,8 @@ class Agent:
 
 	def update_target_network(self):
 		alpha = self.ALPHA
-		actor_weights = np.array(self.actor_network.get_weights(), dtype=object)
-		actor_target_weights = np.array(self.actor_old_network.get_weights(), dtype=object)
+		actor_weights = np.array(self.actor_network.get_weights())
+		actor_target_weights = np.array(self.actor_old_network.get_weights())
 		new_weights = alpha*actor_weights + (1-alpha)*actor_target_weights
 		self.actor_old_network.set_weights(new_weights)
 

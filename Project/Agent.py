@@ -1,9 +1,9 @@
 import numpy as np
 import time
-from collections import deque
 import tensorflow as tf
 from tensorflow import keras as K
 from Memory import *
+from tensorflow.python.framework.ops import disable_eager_execution
 
 class Agent:
     def __init__(self,action_n, state_dim, training_batch_size,GAMMA=0.99, \
@@ -23,6 +23,7 @@ class Agent:
         self.dummy_advantage = np.zeros((1, 1))
         self.dummy_old_prediciton = np.zeros((1, self.action_n))
         self.memory = Memory()
+        disable_eager_execution()
 
 
 
