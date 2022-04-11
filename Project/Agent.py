@@ -131,8 +131,8 @@ class Agent:
 
 	def update_target_network(self):
 		alpha = self.ALPHA
-		actor_weights = np.array(self.actor_network.get_weights())
-		actor_target_weights = np.array(self.actor_old_network.get_weights())
+		actor_weights = np.array(self.actor_network.get_weights(),dtype=object)
+		actor_target_weights = np.array(self.actor_old_network.get_weights(),dtype=object)
 		new_weights = alpha*actor_weights + (1-alpha)*actor_target_weights
 		self.actor_old_network.set_weights(new_weights)
 
