@@ -19,19 +19,9 @@ class Memory:
         self.batch_done.append(done)
 
 
-    # def get_batch(self,batch_size):
-    #     s,a,gae_r = [],[],[]
-    #     for _ in range(batch_size):
-    #         pos = np.random.randint(len(self.batch_s))
-    #         s.append(self.batch_s[pos])
-    #         a.append(self.batch_a[pos])
-    #         gae_r.append(self.batch_gae_r[pos])
-    #     return (s, a, gae_r)
-
-
     def get_batch(self,batch_size):
+        s,a,r,gae_r,s_,d = [],[],[],[],[],[]
         for _ in range(batch_size):
-            s,a,r,gae_r,s_,d = [],[],[],[],[],[]
             pos = np.random.randint(len(self.batch_s))
             s.append(self.batch_s[pos])
             a.append(self.batch_a[pos])
@@ -39,7 +29,20 @@ class Memory:
             gae_r.append(self.batch_gae_r[pos])
             s_.append(self.batch_s_[pos])
             d.append(self.batch_done[pos])
-        return s,a,r,gae_r,s_,d
+        return (s,a,r,gae_r,s_,d)
+
+
+    # def get_batch(self,batch_size):
+    #     for _ in range(batch_size):
+    #         s,a,r,gae_r,s_,d = [],[],[],[],[],[]
+    #         pos = np.random.randint(len(self.batch_s))
+    #         s.append(self.batch_s[pos])
+    #         a.append(self.batch_a[pos])
+    #         r.append(self.batch_r[pos])
+    #         gae_r.append(self.batch_gae_r[pos])
+    #         s_.append(self.batch_s_[pos])
+    #         d.append(self.batch_done[pos])
+    #     return s,a,r,gae_r,s_,d
 
     def clear(self):
         self.batch_s.clear()
