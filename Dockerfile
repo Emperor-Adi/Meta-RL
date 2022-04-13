@@ -1,5 +1,5 @@
 #10.2-cudnn8-devel-ubuntu18.04
-FROM nvidia/cuda@sha256:0d9e949e0d158e9d5ec0e402c222e0b9bcf8f9b6d58fc43fb91617bdefd796f4
+FROM nvidia/cuda@sha256:6b234654bf6a91d03fba711448920864a27a384174622e71a5fbf81d46bb4f2a
 
 RUN apt-get update -q \
 	&& DEBIAN_FRONTEND=noninteractive apt-get install -y \
