@@ -1,6 +1,4 @@
-from cmath import exp
 import numpy as np
-import os
 import gym
 from collections import deque
 from Agent import *
@@ -56,7 +54,7 @@ def main():
     if args.trajectory_buffer_size !=None :
         TRAJECTORY_BUFFER_SIZE = args.trajectory_buffer_size
 
-    BATCH_SIZE = 16
+    BATCH_SIZE = 32
     if args.batch_size !=None :
         BATCH_SIZE = args.batch_size
 
