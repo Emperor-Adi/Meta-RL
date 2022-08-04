@@ -155,7 +155,6 @@ class Agent:
 		batch_a_final = np.zeros(shape=(len(batch_a),self.action_n))
 		batch_a_final[:, batch_a.flatten()] = 1
 
-		self.actor_network.fit(x=[batch_s, batch_adv, batch_old_preds], \
-			y=batch_a_final, verbose=0)
-		self.critic_network.fit(x=batch_s, y=batch_gae_r, verbose=0)
+		self.actor_network.fit(x=[batch_s, batch_adv, batch_old_preds], y=batch_a_final, batchsize=self.BATCH_SIZE, verbose=0)
+		self.critic_network.fit(x=batch_s, y=batch_gae_r, batchsize=self.BATCH_SIZE, verbose=0)
 		self.update_target_network()

@@ -31,9 +31,11 @@ class SpecialEnv(Wrapper):
             self.LINK_LENGTH_1 = self.LINK_LENGTH_2 = Boxes[self.env_name][self.env_version][0]
             self.LINK_MASS_1 = self.LINK_MASS_2 = Boxes[self.env_name][self.env_version][1]
             self.LINK_MOI = Boxes[self.env_name][self.env_version][2]
+            self.LINK_COM_POS_1 = self.LINK_COM_POS_2 = self.LINK_LENGTH_1 / 2.0
         elif self.env_name == ENVS[3]:
             self.l = Boxes[self.env_name][self.env_version][0]
             self.m = Boxes[self.env_name][self.env_version][1]
+            self.g = 9.81
         elif self.env_name == ENVS[4]:
             pass
         elif self.env_name == ENVS[5]:
