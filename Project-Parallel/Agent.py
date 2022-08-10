@@ -142,17 +142,20 @@ class Agent:
     
     def store_transition(self,s,a,s_,r,done) -> None:
         self.memory.store(s, a, s_, r ,done)
-    
+
+
     def normalize(x, axis=-1, order=2) -> np.array:
         l2 = np.atleast_1d(np.linalg.norm(x, order, axis))
         l2[l2 == 0] = 1
         return x / np.expand_dims(l2, axis)
+
 
     def update_old_network(self) -> None:
         actor_weights = np.array(self.actor_network.get_weights())
         actor_old_weights = np.array(self.actor_old_network.get_weights())
         new_weights = self.alpha * actor_weights + (1 - self.alpha) * actor_old_weights
         self.actor_old_network.set_weights(new_weights)
+
 
     def train_network(self) -> None:
         if not self.memory.GAE_CALCULATED_Q:

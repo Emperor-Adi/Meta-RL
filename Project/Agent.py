@@ -1,7 +1,7 @@
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
-from .Memory import *
+from Memory import *
 import time
 from tensorflow.python.framework.ops import disable_eager_execution
 

@@ -1,0 +1,3 @@
+[submodule "Project-Parallel/GymWrapper"]
+	path = Project-Parallel/GymWrapper
+	url = https://github.com/TheMonocledHamster/GymWrapper.git
