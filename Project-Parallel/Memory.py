@@ -2,41 +2,41 @@ import numpy as np
 
 class Memory:
     def __init__(self) -> None:
-        self.batch_state = []
-        self.batch_action = []
-        self.batch_reward = []
-        self.batch_gae_reward = []
-        self.batch_next_state = []
+        self.batch_s = [] # states
+        self.batch_a = [] # actions
+        self.batch_s_ = [] # next states
+        self.batch_r = [] # rewards
+        self.batch_gae_r = [] # GAE rewards
         self.batch_done = []
         self.GAE_CALCULATED_Q = False
 
-    def store(self, state, action, reward, next_state, done):
-        self.batch_state.append(state)
-        self.batch_action.append(action)
-        self.batch_reward.append(reward)
-        self.batch_next_state.append(next_state)
+    def store(self, s, a, s_, r ,done):
+        self.batch_s.append(s)
+        self.batch_a.append(a)
+        self.batch_s_.append(s_)
+        self.batch_r.append(r)
         self.batch_done.append(done)
     
     def get_batch(self, batch_size):
-        s,a,r,gae_r,s_,d = [],[],[],[],[],[]
-        for _ in range(batch_size):
-            pos = np.random.randint(len(self.batch_state))
-            s.append(self.batch_state[pos])
-            a.append(self.batch_action[pos])
-            r.append(self.batch_reward[pos])
-            gae_r.append(self.batch_gae_reward[pos])
-            s_.append(self.batch_next_state[pos])
-            d.append(self.batch_done[pos])
-        return (s,a,r,gae_r,s_,d)
+        s,a,s_,r,gae_r,d = [],[],[],[],[],[]
+        rng = np.random.random(batch_size)
+        rng = list(map(lambda x: int(self.size*x),rng))
+        s.extend([self.batch_s[pos] for pos in rng])
+        a.extend([self.batch_a[pos] for pos in rng])
+        s_.extend([self.batch_s_[pos] for pos in rng])
+        r.extend([self.batch_r[pos] for pos in rng])
+        gae_r.extend([self.batch_gae_r[pos] for pos in rng])
+        d.extend([self.batch_done[pos] for pos in rng])
+        return (s,a,s_,r,gae_r,d)
 
     def clear(self):
-        self.batch_state.clear()
-        self.batch_action.clear()
-        self.batch_reward.clear()
-        self.batch_next_state.clear()
+        self.batch_s.clear()
+        self.batch_a.clear()
+        self.batch_r.clear()
+        self.batch_s_.clear()
         self.batch_done.clear()
         self.GAE_CALCULATED_Q = False
     
     @property
-    def sample_count(self):
-        return len(self.batch_state)
+    def size(self):
+        return len(self.batch_s)
