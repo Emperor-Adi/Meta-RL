@@ -28,7 +28,7 @@ class Memory:
             s_.append(self.batch_next_state[pos])
             d.append(self.batch_done[pos])
         return (s,a,r,gae_r,s_,d)
-    
+
     def clear(self):
         self.batch_state.clear()
         self.batch_action.clear()

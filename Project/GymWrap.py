@@ -1,10 +1,9 @@
 from gym import Wrapper
-import numpy as np
 from BoxScript import Boxes
 
 ENVS = list(Boxes.keys())
 
-class SpecialEnv(Wrapper):
+class GymWrap(Wrapper):
     def __init__(self, env,  env_name, env_version):
         super().__init__(env)
         self.env_name = env_name

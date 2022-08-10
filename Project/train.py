@@ -2,7 +2,7 @@ import numpy as np
 import gym
 from collections import deque
 from Agent import *
-from CustomEnvs import SpecialEnv
+from GymWrap import GymWrap
 import csv
 import argparse
 from datetime import datetime
@@ -66,7 +66,7 @@ def main():
     if args.gamma != None:
         GAMMA = args.gamma
 
-    GAE_LAMBDA=0.95
+    GAE_LAMBDA=0.9
     if args.gae_lambda != None:
         GAE_LAMBDA = args.gae_lambda
 
@@ -83,7 +83,7 @@ def main():
         ALPHA = args.alpha
 
 
-    env = SpecialEnv(gym.make(ENV_NAME),ENV_NAME,ENV_VERSION)
+    env = GymWrap(gym.make(ENV_NAME),ENV_NAME,ENV_VERSION)
     agent = Agent(env.action_space.n, env.observation_space.shape, BATCH_SIZE, \
         GAMMA, GAE_LAMBDA, CLIP_LOSS_RATIO, ENTROPY_LOSS_RATIO, ALPHA)
     samples_filled = 0
@@ -97,36 +97,36 @@ def main():
             scores = []
             max_reward = -500
             for ep_count in range(TRAIN_ITERATIONS):
-                s = env.reset()
-                r_sum = 0
+                state = env.reset()
+                total_reward = 0
                 row = [ENV_NAME,ENV_VERSION,None,None,EXPECTED_REWARD,None,BATCH_SIZE]
                 for count_step in range(MAX_EPISODE_LENGTH):
                     # if count_step % RENDER_EVERY == 0 :
                     #     env.render()
-                    a = agent.choose_action(s)
-                    s_, r, done, _ = env.step(a)
-                    r_sum += r
-                    agent.store_transition(s, a, s_, r, done)
+                    action = agent.choose_action(state)
+                    next_state, reward, done, _ = env.step(action)
+                    total_reward += reward
+                    agent.store_transition(state, action, next_state, reward, done)
                     samples_filled += 1
                     if samples_filled == TRAJECTORY_BUFFER_SIZE:
                         for _ in range(TRAJECTORY_BUFFER_SIZE // BATCH_SIZE):
                             agent.train_network()
                         agent.memory.clear()
                         samples_filled = 0
-                    s = s_
+                    state = next_state
                     if done:
                         break
-                scores_window.append(r_sum)
-                scores.append(r_sum)
-                row[2],row[3] = ep_count,r_sum
+                scores_window.append(total_reward)
+                scores.append(total_reward)
+                row[2],row[3] = ep_count,total_reward
                 if np.mean(scores_window)>=EXPECTED_REWARD:
                     # print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}'.format(ep_count-100, np.mean(scores_window)))
-                    agent.actor_network.save_weights("Models/"+ENV_NAME+"_"+ENV_VERSION+"_"+str(r_sum)+".h5")
+                    agent.actor_network.save_weights("Models/"+ENV_NAME+"_"+ENV_VERSION+"_"+str(total_reward)+".h5")
                     row[5],row[6] = ep_count-100,np.mean(scores_window)
                     csvwriter.writerow(row)
                     break
-                max_reward = max(max_reward, r_sum)
-                # print('Episodes:', ep_count, 'Episodic_Reward:', r_sum)
+                max_reward = max(max_reward, total_reward)
+                # print('Episodes:', ep_count, 'Episodic_Reward:', total_reward)
                 csvwriter.writerow(row)
 
     except Exception as e:
