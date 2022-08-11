@@ -1,6 +1,6 @@
 agent.py:
   __init__:
-    BATCH_SIZE: 32
+    BATCH_SIZE: 32  # Identical to the batch size in the training loop
     GAMMA: 0.99
     GAE_LAMBDA: 0.95
     CLIP_LOSS_RATIO: 0.1
@@ -10,12 +10,20 @@ agent.py:
 train.py:
   __init__:
     ENV_NAME: "CartPole-v1"
-  
   train:
     TRAIN_ITERATIONS: 10000
-    EXPECTED_REWARD: 495
+    REWARD_THRESHOLD: 475
     MAX_EP_LEN: 1000
     TRAJECTORY_BUFFER_SIZE: 64
-    BATCH_SIZE: 32
+    BATCH_SIZE: 32  # Identical to the batch size in the agent class
     WINDOW_SIZE: 100
     RENDER_FREQ: 50
+
+test.py:
+  __init__:
+    ENV_NAME: "CartPole-v1"
+    MODEL_PATH: "../../Models/actor_CartPole-v1_500_<timestamp>.h5"
+  wrap:
+    ENV_TYPE: "Determinisitic"
+  test:
+    TEST_ITERATIONS: 50

@@ -187,3 +187,11 @@ class Agent:
             batch_size=self.batch_size
         )
         self.update_old_network()
+
+
+    def save_model(self,path) -> None:
+        self.actor_network.save_weights(path)
+    
+
+    def load_model(self,path) -> None:
+        self.actor_network.load_weights(path)
