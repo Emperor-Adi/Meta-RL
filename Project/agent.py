@@ -1,7 +1,7 @@
 import numpy as np
 import tensorflow as tf
-from tensorflow.python.keras import layers, models
 # from tensorflow.keras import layers, models
+from tensorflow.python.keras import layers, models
 from .memory import Memory
 from .config import extern
 import time

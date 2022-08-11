@@ -11,7 +11,7 @@ ARGS = parser.parse_args()
 
 with open(ARGS.config_file,'r') as file:
     config = yaml.load(file)
-print(f"Loaded configuration from {ARGS.config_file}")
+print("Loaded configuration from {}".format(ARGS.config_file))
 
 
 def extern(func):

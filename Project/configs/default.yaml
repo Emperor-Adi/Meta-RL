@@ -1,7 +1,6 @@
-# Training
-
 agent.py:
   __init__:
+    BATCH_SIZE: 32
     GAMMA: 0.99
     GAE_LAMBDA: 0.95
     CLIP_LOSS_RATIO: 0.1
@@ -9,3 +8,14 @@ agent.py:
     ALPHA: 0.9
 
 train.py:
+  __init__:
+    ENV_NAME: "CartPole-v1"
+  
+  train:
+    TRAIN_ITERATIONS: 10000
+    EXPECTED_REWARD: 495
+    MAX_EP_LEN: 1000
+    TRAJECTORY_BUFFER_SIZE: 64
+    BATCH_SIZE: 32
+    WINDOW_SIZE: 100
+    RENDER_FREQ: 50
