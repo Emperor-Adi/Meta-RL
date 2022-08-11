@@ -21,9 +21,9 @@ class Tester:
 
 
     def log(self) -> None:
-        file_name = './Logs/test_data_'+self.env_name+self.ID+'.csv'
+        file_name = '../Logs/test/'+self.env_name+self.ID+'.csv'
         if not os.path.isfile(file_name):
-            with open('Logs/test_data.csv','w') as csvfile:
+            with open(file_name,'w') as csvfile:
                 header = csv.writer(csvfile)
                 fields = ['Environment Name','Environnment Type','Model',\
                     'Episode','Episodic Reward']

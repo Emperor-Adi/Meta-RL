@@ -22,7 +22,7 @@ class Trainer:
 
 
     def log(self) -> None:
-        file_name = './Logs/train_data_'+self.env_name+self.ID+'.csv'
+        file_name = './Logs/train/'+self.env_name+self.ID+'.csv'
         self.logfile = open(file_name,'w')
         self.logger = csv.writer(file_name,lineterminator="\n")
         fields = ['Episode','Episodic Reward','Maximum Reward']
