@@ -3,7 +3,7 @@ import csv
 import os
 from .agent import Agent
 from .config import extern
-from .GymWrapper.GymWrap import GymWrap
+from ..GymWrapper.GymWrap import GymWrap
 
 
 class Tester:

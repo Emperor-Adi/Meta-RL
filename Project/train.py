@@ -4,7 +4,7 @@ from collections import deque
 import csv
 from .config import extern
 from .agent import Agent
-from .GymWrapper.GymWrap import GymWrap
+from ..GymWrapper.GymWrap import GymWrap
 
 
 
