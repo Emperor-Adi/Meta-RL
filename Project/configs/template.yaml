@@ -1,0 +1,14 @@
+module1.py:
+  
+  function1:
+    parameter_A: "value1"
+    parameter_B: "value2"
+  
+  function2:
+    parameter_C: "value3"
+
+module2.py:
+    
+    function3:
+      parameter_D: "value4"
+      parameter_E: "value5"

@@ -2,18 +2,20 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.python.keras import layers, models
 # from tensorflow.keras import layers, models
-from .Memory import Memory
-from config import extern
+from .memory import Memory
+from .config import extern
 import time
 
 
 
 class Agent:
-    def __init__(self, action, state_shape, batch_size, GAMMA=0.99, \
-        GAE_LAMBDA=0.95, CLIP_LOSS_RATIO=0.1, ENTROPY_LOSS_RATIO=0.001, ALPHA=0.9) -> None:
-        """
-        Initializes the agent with the given parameters and builds the A2C networks.
-        """
+    """
+    Advantage Actor-Critic Algorithm(A2C) with Proximal Policy Optimization(PPO)
+    """
+    @extern
+    def __init__(self, action, state_shape, batch_size, GAMMA=0.99, GAE_LAMBDA=0.9,\
+        CLIP_LOSS_RATIO=0.1, ENTROPY_LOSS_RATIO=0.001, ALPHA=0.1) -> None:
+
         # Agent parameters
         self.action = action
         self.state_shape = state_shape

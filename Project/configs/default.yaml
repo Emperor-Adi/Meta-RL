@@ -1,0 +1,11 @@
+# Training
+
+agent.py:
+  __init__:
+    GAMMA: 0.99
+    GAE_LAMBDA: 0.95
+    CLIP_LOSS_RATIO: 0.1
+    ENTROPY_LOSS_RATIO: 0.001
+    ALPHA: 0.9
+
+train.py:

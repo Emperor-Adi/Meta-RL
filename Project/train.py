@@ -1,139 +1,72 @@
 import numpy as np
 import gym
 from collections import deque
-from Agent import *
-from GymWrap import GymWrap
 import csv
-import argparse
-from datetime import datetime
-
-def main():
-    #Handling command line args
-    parser = argparse.ArgumentParser()
-
-    #positional arguments
-    parser.add_argument('--env_name',help='The Environment name from gym')
-    parser.add_argument('--env_version',help='Decides the value range of the custom parameters')
-    parser.add_argument('--expected_reward',type=float , help='The reward at which Environment is considered solved')
+from time import time as timestamp
+from .config import extern
+from .agent import Agent
+from .GymWrapper.GymWrap import GymWrap
 
 
-    #optional arguments
-    parser.add_argument('-ti','--train_iterations',type=int,help='Maximum training iterations')
-    parser.add_argument('-mel','--max_episode_length',type=int,help='Maximum steps in each episode')
-    parser.add_argument('-tbs','--trajectory_buffer_size',type=int,help='Trajectory Buffer Size')
-    parser.add_argument('-bs','--batch_size',type=int,help='Batch size')
-    parser.add_argument('-re','--render_every',type=int,help='Render every this many episodes')
 
-    #agent class args
-    parser.add_argument('-G','--gamma',type=float,help='Gamma value')
-    parser.add_argument('-gl','--gae_lambda',type=float,help='GAE lambda value')
-    parser.add_argument('-clr','--clip_loss_ratio',type=float,help='Clipping Loss Ratio')
-    parser.add_argument('-elr','--entropy_loss_ratio',type=float,help='Entropy Loss Ratio')
-    parser.add_argument('-A','--alpha',type=float)
+class Trainer:
+    """
+    Class to train an agent on a gym environment.
+    """
+    @extern
+    def __init__(self,ENV_NAME="") -> None:
+        self.env = gym.make(ENV_NAME)
+        self.agent = Agent(self.env.action_space.n,self.env.observation_space.shape)
+        self.samples_filled = 0
+        
+        file_name = './Logs/train_data_'+str(timestamp)+'.csv'
+        self.logfile = open(file_name,'w')
+        self.logger = csv.writer(file_name,lineterminator="\n")
+        self.logger.writerow(['Episode','Episodic Reward','Maximum Reward'])
+        self.metadata = open(file_name+'.mtdt','w')
+        self.metadata.writelines("Gym Environment: "+ENV_NAME+"\n")
+        
 
-    args = parser.parse_args()
-
-
-    ENV_NAME = args.env_name
-    ENV_VERSION = args.env_version
-    EXPECTED_REWARD = args.expected_reward
-    # ENV_NAME = "CartPole-v1"
-    # ENV_VERSION = "Deterministic"
-    # EXPECTED_REWARD = 475
-
-
-    TRAIN_ITERATIONS = 40000
-    if args.train_iterations != None :
-        TRAIN_ITERATIONS = args.train_iterations
-
-    MAX_EPISODE_LENGTH = 1000
-    if args.max_episode_length !=None :
-        MAX_EPISODE_LENGTH = args.max_episode_length
-
-    TRAJECTORY_BUFFER_SIZE = 32
-    if args.trajectory_buffer_size !=None :
-        TRAJECTORY_BUFFER_SIZE = args.trajectory_buffer_size
-
-    BATCH_SIZE = 32
-    if args.batch_size !=None :
-        BATCH_SIZE = args.batch_size
-
-    RENDER_EVERY = 10
-    if args.render_every !=None :
-        RENDER_EVERY = args.render_every
-
-    GAMMA=0.99
-    if args.gamma != None:
-        GAMMA = args.gamma
-
-    GAE_LAMBDA=0.9
-    if args.gae_lambda != None:
-        GAE_LAMBDA = args.gae_lambda
-
-    CLIP_LOSS_RATIO=0.1
-    if args.clip_loss_ratio != None:
-        CLIP_LOSS_RATIO = args.clip_loss_ratio
-
-    ENTROPY_LOSS_RATIO=0.001
-    if args.entropy_loss_ratio != None:
-        ENTROPY_LOSS_RATIO = args.entropy_loss_ratio
-
-    ALPHA=0.9
-    if args.alpha != None:
-        ALPHA = args.alpha
-
-
-    env = GymWrap(gym.make(ENV_NAME),ENV_NAME,ENV_VERSION)
-    agent = Agent(env.action_space.n, env.observation_space.shape, BATCH_SIZE, \
-        GAMMA, GAE_LAMBDA, CLIP_LOSS_RATIO, ENTROPY_LOSS_RATIO, ALPHA)
-    samples_filled = 0
-
-    try:
-        with open('./Logs/train_data_'+ENV_NAME+'_'+ENV_VERSION+'_'+str(datetime.now().timestamp())+'.csv','w+') as csvfile:
-            csvwriter = csv.writer(csvfile,lineterminator="\n")
-            fields = ['Gym Environment','Episode','Episodic Reward','Expected Reward','Solved In','Batch Size']
-            csvwriter.writerow(fields)
-            scores_window = deque(maxlen=100)
-            scores = []
-            max_reward = -500
-            for ep_count in range(TRAIN_ITERATIONS):
-                state = env.reset()
-                total_reward = 0
-                row = [ENV_NAME,ENV_VERSION,None,None,EXPECTED_REWARD,None,BATCH_SIZE]
-                for count_step in range(MAX_EPISODE_LENGTH):
-                    # if count_step % RENDER_EVERY == 0 :
-                    #     env.render()
-                    action = agent.choose_action(state)
-                    next_state, reward, done, _ = env.step(action)
-                    total_reward += reward
-                    agent.store_transition(state, action, next_state, reward, done)
-                    samples_filled += 1
-                    if samples_filled == TRAJECTORY_BUFFER_SIZE:
-                        for _ in range(TRAJECTORY_BUFFER_SIZE // BATCH_SIZE):
-                            agent.train_network()
-                        agent.memory.clear()
-                        samples_filled = 0
-                    state = next_state
-                    if done:
-                        break
-                scores_window.append(total_reward)
-                scores.append(total_reward)
-                row[2],row[3] = ep_count,total_reward
-                if np.mean(scores_window)>=EXPECTED_REWARD:
-                    # print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}'.format(ep_count-100, np.mean(scores_window)))
-                    agent.actor_network.save_weights("Models/"+ENV_NAME+"_"+ENV_VERSION+"_"+str(total_reward)+".h5")
-                    row[5],row[6] = ep_count-100,np.mean(scores_window)
-                    csvwriter.writerow(row)
+    @extern
+    def train(self,TRAIN_ITERATIONS=40000,EXP_REWARD=0,MAX_EP_LEN=1000,\
+        TRAJECTORY_BUFFER_SIZE=64,BATCH_SIZE=32,WINDOW_SIZE=100,RENDER_FREQ=50) -> None:
+        """
+        Train the agent on the gym environment.
+        """
+        self.metadata.writelines("Expected Reward: "+str(EXP_REWARD)+"\n")
+        self.metadata.writelines("Batch Size: "+str(BATCH_SIZE)+"\n")
+        self.metadata.writelines("Trajectory Buffer Size: "+str(TRAJECTORY_BUFFER_SIZE)+"\n")
+        scores_window = deque(maxlen=WINDOW_SIZE)
+        max_reward = -500
+        for episode in range(1,TRAIN_ITERATIONS+1):
+            state = self.env.reset()
+            episode_reward = 0
+            episode_data = []
+            for step in range(MAX_EP_LEN):
+                if step % RENDER_FREQ == 0:
+                    self.env.render()
+                action = self.agent.choose_action(state)
+                next_state, reward, done, _ = self.env.step(action)
+                episode_reward += reward
+                self.agent.store_transition(state, action, reward, next_state, done)
+                self.samples_filled += 1
+                if self.samples_filled == TRAJECTORY_BUFFER_SIZE:
+                    for _ in range(TRAJECTORY_BUFFER_SIZE//BATCH_SIZE):
+                        self.agent.train_network()
+                    self.agent.memory.clear()
+                    self.samples_filled = 0
+                state = next_state
+                if done:
                     break
-                max_reward = max(max_reward, total_reward)
-                # print('Episodes:', ep_count, 'Episodic_Reward:', total_reward)
-                csvwriter.writerow(row)
-
-    except Exception as e:
-        # print(e)
-        with open('./Logs/errorlogs.log','a+') as errlog:
-            errlog.writelines("Train Error: "+str(ENV_NAME)+" "+str(ENV_VERSION)+" "+str(EXPECTED_REWARD))
-            errlog.writelines("\nTimeStamp: "+str(datetime.now())+"\n"+str(e)+"\n\n")
-
-if __name__ == '__main__':
-    main()
+            scores_window.append(episode_reward)
+            max_reward  = max(max_reward,episode_reward)
+            self.logger.writerow([episode,episode_reward,max_reward])
+            if np.mean(scores_window)>EXP_REWARD:
+                self.metadata.writelines("Solved in {} episodes".format(episode))
+                break
+    
+    
+    def cleanup(self) -> None:
+        self.env.close()
+        self.metadata.close()
+        self.logfile.close()

@@ -1,4 +1,3 @@
-from curses import has_extended_color_support
 import yaml
 from pathlib import Path
 import argparse
