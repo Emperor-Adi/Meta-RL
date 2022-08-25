@@ -108,7 +108,7 @@ class Agent:
         return action
     
 
-    def get_old_prediction(self, states)->np.array:
+    def _get_old_pred(self, states)->np.array:
         ret_batch = []
         for state in states:
             state = np.reshape(state, (-1, self.state_shape[0]))
@@ -118,13 +118,13 @@ class Agent:
         return np.array(ret_batch)
     
     
-    def get_val(self,state) -> np.array:
+    def _get_val(self,state) -> np.array:
         state = np.reshape(state,(-1,self.state_shape[0]))
         val = self.critic_network.predict_on_batch(state)
         return val
 
 
-    def make_gae(self) -> None:
+    def _makeGAE(self) -> None:
         """
         Generate Generalized Advantage Estimation(GAE) vector and store in memory
         delta = r + gamma * V(s') * mask - V(s) | Advantage
@@ -135,8 +135,8 @@ class Agent:
         mask = 0
         for i in reversed(range(self.memory.size())):
             mask = 0 if self.memory.batch_done[i] else 1
-            val = self.get_val(self.memory.batch_s[i])
-            val_next = self.get_val(self.memory.batch_s_[i])
+            val = self._get_val(self.memory.batch_s[i])
+            val_next = self._get_val(self.memory.batch_s_[i])
             delta = self.memory.batch_r[i] + self.gamma * val_next * mask - val
             gae = delta + self.gamma * self.gae_lambda * mask * gae
             self.memory.batch_gae_r.append(gae + val)
@@ -147,7 +147,7 @@ class Agent:
         self.memory.store(s, a, s_, r ,done)
 
 
-    def normalize(x, axis=-1, order=2) -> np.array:
+    def _normalize(x, axis=-1, order=2) -> np.array:
         l2 = np.atleast_1d(np.linalg.norm(x, order, axis))
         l2[l2 == 0] = 1
         return x / np.expand_dims(l2, axis)
@@ -162,15 +162,15 @@ class Agent:
 
     def train_network(self) -> None:
         if not self.memory.GAE_CALCULATED_Q:
-            self.make_gae()
+            self._makeGAE()
         s,a,s_,r,gae_r,done = self.memory.get_batch(self.batch_size)
 
         batch_s = np.vstack(s)
         batch_a = np.vstack(a)
         batch_gae_r = np.vstack(gae_r)
-        batch_v = self.get_val(batch_s)
-        batch_adv = self.normalize(batch_gae_r - batch_v)
-        batch_old_preds = self.get_old_prediction(batch_s)
+        batch_v = self._get_val(batch_s)
+        batch_adv = self._normalize(batch_gae_r - batch_v)
+        batch_old_preds = self._get_old_pred(batch_s)
 
         batch_a_final = np.zeros((len(batch_a),self.action))
         batch_a_final[:,batch_a.flatten()] = 1
